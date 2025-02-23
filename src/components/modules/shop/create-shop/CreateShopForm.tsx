@@ -16,6 +16,8 @@ import Logo from "@/app/assets/svgs/Logo";
 import NMImageUploader from "@/components/ui/core/NMImageUploader";
 import { useState } from "react";
 import ImagePreviewer from "@/components/ui/core/NMImageUploader/ImagePreviewer";
+import { toast } from "sonner";
+import { createShop } from "@/services/shop";
 
 export default function CreateShopForm() {
   const [imageFiles, setImageFiles] = useState<File[] | []>([]);
@@ -47,13 +49,13 @@ export default function CreateShopForm() {
       formData.append("logo", imageFiles[0] as File);
       console.log(formData);
 
-      //   const res = await createShop(formData);
+      const res = await createShop(formData);
 
-      //   console.log(res);
+      console.log(res);
 
-      //   if (res.success) {
-      //     toast.success(res.message);
-      //   }
+      if (res.success) {
+        toast.success(res.message);
+      }
     } catch (err: any) {
       console.error(err);
     }
