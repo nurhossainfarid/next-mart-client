@@ -13,20 +13,33 @@ import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import Link from "next/link";
 import Logo from "@/app/assets/svgs/Logo";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginUser } from "@/services/AuthService";
+import { loginUser, verifyReCaptchaToken } from "@/services/AuthService";
 import { toast } from "sonner";
 import { loginSchema } from "./loginValidation";
+import ReCAPTCHA from "react-google-recaptcha";
+import { useState } from "react";
 
 export default function LoginForm() {
   const form = useForm({
     resolver: zodResolver(loginSchema),
   });
 
-
   const {
     formState: { isSubmitting },
   } = form;
 
+  const [reCaptchaStatus, setReCaptchaStatus] = useState(false);
+
+  const handleReCaptcha = async (value: string | null) => {
+    try {
+      const res = await verifyReCaptchaToken(value!);
+      if (res?.success) {
+        setReCaptchaStatus(true);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     try {
@@ -78,7 +91,15 @@ export default function LoginForm() {
               </FormItem>
             )}
           />
+          <div className="flex w-full mt-5">
+            <ReCAPTCHA
+              sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_CLIENT_KEY || ""}
+              onChange={handleReCaptcha}
+              className="mx-auto"
+            />
+          </div>
           <Button
+            disabled={reCaptchaStatus ? false : true}
             type="submit"
             className="mt-5 w-full"
           >
