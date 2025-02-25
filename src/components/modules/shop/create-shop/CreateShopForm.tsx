@@ -47,17 +47,19 @@ export default function CreateShopForm() {
       const formData = new FormData();
       formData.append("data", JSON.stringify(modifiedData));
       formData.append("logo", imageFiles[0] as File);
-      console.log(formData);
 
       const res = await createShop(formData);
-
       console.log(res);
 
       if (res.success) {
         toast.success(res.message);
+      } else if (res.errorSources) {
+        toast.error(res.errorSources[0].message);
+      } else {
+        toast.error(res.message);
       }
     } catch (err: any) {
-      console.error(err);
+      console.error(err.message);
     }
   };
 
